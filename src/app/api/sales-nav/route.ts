@@ -134,43 +134,79 @@ export async function POST(request: Request) {
       
       let content = data.choices[0].message.content;
       
-      // Clean up the content if it contains markdown code blocks
-      if (content.includes('```json')) {
-        content = content.replace(/```json\n/g, '').replace(/\n```/g, '');
-      } else if (content.includes('```')) {
-        content = content.replace(/```\n/g, '').replace(/\n```/g, '');
+      // More aggressive cleaning of the content to handle various LLM formatting issues
+      let cleanedContent = content;
+      
+      // Remove any markdown code blocks (with or without language specifier)
+      if (cleanedContent.includes('```')) {
+        // Handle ```json blocks
+        cleanedContent = cleanedContent.replace(/```json\n/g, '').replace(/\n```/g, '');
+        // Handle ``` blocks without language specifier
+        cleanedContent = cleanedContent.replace(/```\n/g, '').replace(/\n```/g, '');
+        // Handle any remaining ``` markers (no newlines)
+        cleanedContent = cleanedContent.replace(/```/g, '');
       }
       
-      console.log('Cleaned content:', content.substring(0, 100) + '...');
+      // Remove any text before the first [ and after the last ]
+      const jsonStartIndex = cleanedContent.indexOf('[');
+      const jsonEndIndex = cleanedContent.lastIndexOf(']');
+      
+      if (jsonStartIndex !== -1 && jsonEndIndex !== -1 && jsonEndIndex > jsonStartIndex) {
+        cleanedContent = cleanedContent.substring(jsonStartIndex, jsonEndIndex + 1);
+      }
+      
+      // Fix common JSON formatting issues
+      // Replace single quotes with double quotes (if they're used for JSON properties)
+      cleanedContent = cleanedContent.replace(/'([^']+)':/g, '"$1":');
+      
+      console.log('Cleaned content:', cleanedContent.substring(0, 100) + '...');
       
       // Try to parse the content as JSON
       try {
         // This will throw if content is not valid JSON
-        const parsedSegments = JSON.parse(content);
+        const parsedSegments = JSON.parse(cleanedContent);
         
-        // Create a readable text format for display
+        // Create a more consistent readable text format for display
         let readableContent = '';
         
         if (Array.isArray(parsedSegments)) {
           parsedSegments.forEach((segment, index) => {
             if (segment.name && segment.content) {
-              // Add segment name as a header with formatting
+              // Add segment name as a header with consistent formatting
               readableContent += `${index + 1}. ${segment.name.toUpperCase()}\n`;
               readableContent += '='.repeat(segment.name.length + 4) + '\n\n';
               
               // Process the content to ensure proper formatting
               let formattedContent = segment.content.trim();
               
-              // Ensure proper line breaks for sections
-              formattedContent = formattedContent.replace(/Why This Segment\?/g, '\nWhy This Segment?\n' + '-'.repeat(18) + '\n');
-              formattedContent = formattedContent.replace(/Key Challenges:/g, '\nKey Challenges:\n' + '-'.repeat(15) + '\n');
-              formattedContent = formattedContent.replace(/🎯 Sales Navigator Filters:/g, '\n🎯 Sales Navigator Filters:\n' + '-'.repeat(25) + '\n');
-              formattedContent = formattedContent.replace(/Best Intent Data Signals/g, '\nBest Intent Data Signals\n' + '-'.repeat(24) + '\n');
+              // Standardize section formatting with consistent spacing
+              const sections = [
+                { pattern: /Why This Segment\?/g, title: 'Why This Segment?', length: 18 },
+                { pattern: /Key Challenges:/g, title: 'Key Challenges:', length: 15 },
+                { pattern: /🎯 Sales Navigator Filters:/g, title: '🎯 Sales Navigator Filters:', length: 25 },
+                { pattern: /Best Intent Data Signals/g, title: 'Best Intent Data Signals', length: 24 }
+              ];
+              
+              // Apply consistent formatting to each section
+              sections.forEach(section => {
+                formattedContent = formattedContent.replace(
+                  section.pattern,
+                  `\n${section.title}\n${'-'.repeat(section.length)}\n`
+                );
+              });
+              
+              // Ensure emoji consistency
+              formattedContent = formattedContent.replace(/👉/g, '👉 '); // Ensure space after emoji
+              formattedContent = formattedContent.replace(/✅/g, '✅ '); // Ensure space after emoji
+              formattedContent = formattedContent.replace(/🔹/g, '🔹 '); // Ensure space after emoji
+              
+              // Fix any double spacing issues
+              formattedContent = formattedContent.replace(/\s{3,}/g, '\n\n');
               
               // Add the formatted content
               readableContent += formattedContent + '\n\n';
               
-              // Add separator between segments
+              // Add consistent separator between segments
               if (index < parsedSegments.length - 1) {
                 readableContent += '\n' + '*'.repeat(50) + '\n\n';
               }
@@ -178,17 +214,64 @@ export async function POST(request: Request) {
           });
         }
         
+        // Ensure we have valid readable content
+        const finalReadableContent = readableContent.trim() || JSON.stringify(parsedSegments, null, 2);
+        
+        // Log the final content length to help with debugging
+        console.log(`Final content length: ${finalReadableContent.length} characters`);
+        
         // Return both the readable text for display and structured data for segment selection
         return NextResponse.json({
-          result: readableContent || JSON.stringify(parsedSegments, null, 2), // Readable text or fallback to JSON
-          segments: parsedSegments // Structured data for segment selection
+          result: finalReadableContent, // Readable text or fallback to JSON
+          segments: parsedSegments, // Structured data for segment selection
+          format: readableContent.trim() ? 'formatted' : 'json' // Indicate which format was used
         });
       } catch (jsonError) {
         console.error('Error parsing LLM response as JSON:', jsonError);
-        // If parsing fails, return the raw content
+        
+        // Try to extract anything that looks like JSON from the content
+        let extractedJson = '';
+        // Use a regex that's compatible with the current TypeScript configuration
+        // Instead of /s flag (which requires ES2018+), use [\s\S]* to match any character including newlines
+        const jsonMatch = cleanedContent.match(/\[\s*\{[\s\S]*\}\s*\]/);
+        if (jsonMatch) {
+          extractedJson = jsonMatch[0];
+          console.log('Extracted potential JSON:', extractedJson.substring(0, 100) + '...');
+          
+          try {
+            // Try to parse the extracted JSON
+            const extractedSegments = JSON.parse(extractedJson);
+            console.log('Successfully parsed extracted JSON');
+            
+            return NextResponse.json({
+              result: JSON.stringify(extractedSegments, null, 2),
+              segments: extractedSegments,
+              format: 'json',
+              warning: 'Used fallback JSON extraction'
+            });
+          } catch (extractError) {
+            console.error('Failed to parse extracted JSON:', extractError);
+          }
+        }
+        
+        // Format the raw content for better display
+        const formattedContent = content
+          .replace(/```json/g, '')
+          .replace(/```/g, '')
+          .trim();
+        
+        // Create a fallback segment from the raw content
+        const fallbackSegments = [{
+          name: "Generated Segment (Parsing Error)",
+          content: formattedContent.substring(0, 1000) // Limit content length
+        }];
+        
+        // If all parsing fails, return the formatted raw content with fallback segments
         return NextResponse.json({
-          result: content,
-          error: 'Failed to parse LLM response as JSON. Returning raw content.'
+          result: formattedContent,
+          segments: fallbackSegments, // Provide at least one segment for selection
+          error: 'Failed to parse LLM response as JSON. Returning formatted raw content.',
+          format: 'raw'
         });
       }
     } catch (parseError) {

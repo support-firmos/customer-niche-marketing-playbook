@@ -10,8 +10,8 @@ const inter = Inter({
 });
 
 export const metadata = {
-  title: 'Market Segment Research Generator',
-  description: 'Create comprehensive market segment research for any industry in seconds',
+  title: 'Niche Marketing Playbook Generator',
+  description: 'Create comprehensive marketing playbook for any niche industry in seconds',
 };
 
 export default function RootLayout({

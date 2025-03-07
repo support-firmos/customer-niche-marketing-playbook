@@ -130,9 +130,22 @@ export default function Home() {
         throw new Error('No result returned from strategy generation');
       }
       
-      // Check if there's an error in the response
+      // Check if there's an error or warning in the response
       if (data.error) {
         console.warn('Warning from sales-nav API:', data.error);
+        // Add the error message to the content for better user feedback
+        if (typeof data.result === 'string') {
+          data.result = `Note: ${data.error}\n\n${data.result}`;
+        }
+      }
+      
+      if (data.warning) {
+        console.warn('Warning from sales-nav API:', data.warning);
+      }
+      
+      // Log the format for debugging
+      if (data.format) {
+        console.log('Content format:', data.format);
       }
       
       // The result should now be a readable text format
@@ -148,7 +161,12 @@ export default function Home() {
         setStep3Segments(data.segments);
       } else {
         console.error('No valid segments in API response');
-        setError('Failed to get valid segments. Please try again.');
+        // Don't set error if we have content to display, just log a warning
+        if (displayContent) {
+          console.warn('No valid segments, but content is available for display');
+        } else {
+          setError('Failed to get valid segments. Please try again.');
+        }
       }
       
     } catch (error) {
