@@ -171,10 +171,7 @@ export default function Home() {
       const response = await fetch('/api/deep-segment', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ 
-          segment: selectedSegment,
-          industry: currentIndustry
-        }),
+        body: JSON.stringify({ segmentInfo: selectedSegment })
       });
 
       if (!response.ok) {
@@ -235,7 +232,7 @@ const handleSteps = () => {
   if (!isStep4Done) {
     return {
       action: (content: string, selectedSegment?: Segment) => 
-        generateDeepSegmentResearch(content, selectedSegment),
+        generateDeepSegmentResearch(selectedSegment),
       buttonText: "Generate Deep Segment Research"
     };
   }
