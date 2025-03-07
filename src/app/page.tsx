@@ -9,11 +9,18 @@ interface FormData {
   input: string;
 }
 
+interface Segment {
+  name: string;
+  content: string;
+}
+
 export default function Home() {
   const [step1GeneratedResearch, setStep1GeneratedResearch] = useState<string | null>(null);
-  const [step2EnhancedResearch, setstep2EnhancedResearch] = useState<string | null>(null);
+  const [step2EnhancedResearch, setStep2EnhancedResearch] = useState<string | null>(null);
   const [step3GeneratedSalesNav, setStep3GeneratedSalesNav] = useState<string | null>(null);
-  //const [step3GeneratedDeepSegment, setStep3GeneratedDeepSegment] = useState<string | null>(null);
+  const [step3Segments, setStep3Segments] = useState<Segment[] | null>(null);
+  const [step4DeepSegmentResearch, setStep4DeepSegmentResearch] = useState<string | null>(null);
+
   //const [step4GeneratedPlaybook, setStep4GeneratedPlaybook] = useState<string | null>(null);
   
   const [isGenerating, setIsGenerating] = useState(false);
@@ -26,8 +33,10 @@ export default function Home() {
     setError(null);
     setIsGenerating(true);
     setStep1GeneratedResearch('');
-    setstep2EnhancedResearch(null);
+    setStep2EnhancedResearch(null);
     setStep3GeneratedSalesNav(null);
+    setStep3Segments(null);
+    setStep4DeepSegmentResearch(null);
     setProgressStatus('Identifying target segments...');
     setCurrentIndustry(formData.input);
 
@@ -85,8 +94,8 @@ export default function Home() {
       const enhancedData = await enhancedResponse.json();
       
       if (enhancedData.result) {
-        setStep1GeneratedResearch(null); // Hide the original research
-        setstep2EnhancedResearch(enhancedData.result); // Show enhanced research
+        //setStep1GeneratedResearch(null); // Hide the original research
+        setStep2EnhancedResearch(enhancedData.result); // Show enhanced research
       } else {
         setError('Could not enhance the segments. Please try again.');
       }
@@ -102,7 +111,7 @@ export default function Home() {
     setError(null);
     setIsGenerating(true);
     setStep3GeneratedSalesNav('');
-    setstep2EnhancedResearch(null);
+    //setStep2EnhancedResearch(null);
     setProgressStatus('Creating LinkedIn Sales Navigator strategy...');
 
     try {
@@ -117,12 +126,26 @@ export default function Home() {
       }
 
       const data = await response.json();
-      
+
       if (!data.result) {
         throw new Error('No result returned from strategy generation');
       }
       
-      setStep3GeneratedSalesNav(data.result);
+      let cleanJSON = data.result.trim();
+      if (cleanJSON.startsWith("```json")) {
+          cleanJSON = cleanJSON.slice(7, -3).trim();  // Remove ```json and trailing ```
+      } else if (cleanJSON.startsWith("```")) {
+          cleanJSON = cleanJSON.slice(3, -3).trim();  // Remove ``` and trailing ```
+      }
+      console.log("cleanJSON",cleanJSON);
+
+      setStep3GeneratedSalesNav(cleanJSON);
+
+      const segmentsJSON = JSON.parse(cleanJSON);
+      console.log('segments',segmentsJSON);
+      if (segmentsJSON) {
+        setStep3Segments(segmentsJSON);
+      }
       
     } catch (error) {
       console.error('Error generating research:', error);
@@ -134,19 +157,66 @@ export default function Home() {
     }
   };
 
+  const generateDeepSegmentResearch = async (selectedSegment?: Segment) => {
+    if (!selectedSegment) {
+      setError('No segment selected for deep research');
+      return;
+    }
+    
+    setError(null);
+    setIsGeneratingNextStep(true);
+    setProgressStatus('Creating deep segment research...');
+    
+    try {
+      const response = await fetch('/api/deep-segment', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ 
+          segment: selectedSegment,
+          industry: currentIndustry
+        }),
+      });
+
+      if (!response.ok) {
+        throw new Error(`Failed to generate deep segment research: ${response.status}`);
+      }
+
+      const data = await response.json();
+      
+      if (!data.result) {
+        throw new Error('No result returned from deep segment research');
+      }
+      
+      //setStep3GeneratedSalesNav(null); // Hide sales nav
+      setStep3Segments(null);
+      setStep4DeepSegmentResearch(data.result);
+      
+    } catch (error) {
+      console.error('Error generating deep segment research:', error);
+      setError('An error occurred while generating the deep segment research. Please try again.');
+    } finally {
+      setIsGeneratingNextStep(false);
+      setProgressStatus('');
+    }
+  };
+
 
   const resetGenerator = () => {
     setStep1GeneratedResearch(null);
-    setstep2EnhancedResearch(null);
+    setStep2EnhancedResearch(null);
+    setStep3GeneratedSalesNav(null);
+    setStep3Segments(null);
+    setStep4DeepSegmentResearch(null);
     setError(null);
     setCurrentIndustry("");
   };
 
   // Determine which content to show
-  const displayContent = step3GeneratedSalesNav || step2EnhancedResearch || step1GeneratedResearch;
+  
+  const displayContent = step4DeepSegmentResearch || step3GeneratedSalesNav || step2EnhancedResearch || step1GeneratedResearch;
   const isStep2Done = !!step2EnhancedResearch;
   const isStep3Done = !!step3GeneratedSalesNav;
-  //const isStep4Done = !!step3GeneratedDeepSegment;
+  const isStep4Done = !!step4DeepSegmentResearch;
   //const isStep5Done = !!step4GeneratedPlaybook;
 
 const handleSteps = () => {
@@ -160,6 +230,13 @@ const handleSteps = () => {
     return {
       action: (content: string) => generateSalesNav(content),
       buttonText: "Generate Sales Navigator Strategy"
+    };
+  }
+  if (!isStep4Done) {
+    return {
+      action: (content: string, selectedSegment?: Segment) => 
+        generateDeepSegmentResearch(content, selectedSegment),
+      buttonText: "Generate Deep Segment Research"
     };
   }
   return undefined;
@@ -190,7 +267,8 @@ const handleSteps = () => {
               onNextSteps={handleSteps()?.action}
               nextStepButtonText={handleSteps()?.buttonText}
               isGeneratingNextStep={isGeneratingNextStep}
-              resultType={step3GeneratedSalesNav ? 'salesNav' : step2EnhancedResearch ? 'enhanced' : 'segments'}
+              resultType={step4DeepSegmentResearch ? 'deepSegment' : step3GeneratedSalesNav ? 'salesNav' : step2EnhancedResearch ? 'enhanced' : 'segments'}
+              segments={step3Segments || []}
             />
           ) : (
             <ResearchForm onSubmit={generateResearch} />

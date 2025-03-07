@@ -19,60 +19,71 @@ export async function POST(request: Request) {
     const prompt = `
     You are a specialized LinkedIn Sales Navigator outreach strategist with deep expertise in B2B targeting and account-based marketing. Your task is to transform the segment information below into a structured LinkedIn Sales Navigator targeting strategy for fractional CFO services.
 
-    FORMAT YOUR RESPONSE EXACTLY LIKE THIS EXAMPLE (but with your own content):
-
-    1️⃣ [SEGMENT NAME]
-    Why This Segment?
-    [3-5 sentences explaining why this segment needs fractional CFO services. Provide specific business context, industry challenges, and financial pain points. Detail how their size, growth stage, and business model create a need for sophisticated financial leadership without the cost of a full-time CFO. Explain their complexity and why they're particularly suited for fractional services.]
+    FORMAT YOUR RESPONSE AS A JSON ARRAY OF OBJECTS, where each object represents a segment with two attributes, namely name and content:
+    [
+      {
+        "name": "segment name here",
+        "content":
+          "
+            Why This Segment?
+            [3-5 sentences explaining why this segment needs fractional CFO services. Provide specific business context, industry challenges, and financial pain points. Detail how their size, growth stage, and business model create a need for sophisticated financial leadership without the cost of a full-time CFO. Explain their complexity and why they're particularly suited for fractional services.]
         
-    Key Challenges:
-    👉 [Challenge 1]—[Detailed explanation of the challenge with specific examples and business implications]
-    👉 [Challenge 2]—[Detailed explanation of the challenge with specific examples and business implications]
-    👉 [Challenge 3]—[Detailed explanation of the challenge with specific examples and business implications]
-    👉 [Challenge 4]—[Detailed explanation of the challenge with specific examples and business implications]
+            Key Challenges:
+            👉 [Challenge 1]—[Detailed explanation of the challenge with specific examples and business implications]
+            👉 [Challenge 2]—[Detailed explanation of the challenge with specific examples and business implications]
+            👉 [Challenge 3]—[Detailed explanation of the challenge with specific examples and business implications]
+            👉 [Challenge 4]—[Detailed explanation of the challenge with specific examples and business implications]
         
-    🎯 Sales Navigator Filters:
-    ✅ Job Titles (Business Decision-Makers & Leaders):
-    [List 20-30 non-finance job titles, one per line, focusing on business owners, executives, and operational leadership who would make decisions about hiring financial services. Include multiple variants of similar roles (Owner, Co-Owner, Founder, Co-Founder, etc.)]
-    Examples:
-    Owner
-    Co-Owner
-    Founder
-    Co-Founder
-    CEO
-    President
-    Managing Director
-    Managing Partner
-    Partner
-    Director
-    Executive Director
-    Chief Operating Officer
-    COO
-    VP of Operations
-    General Manager
-        
-    ✅ Industry:
-    [List 3-5 industry categories, one per line]
-        
-    ✅ Company Headcount:
-    [Specify employee range using LinkedIn's standard brackets: 11-50, 51-200, 201-500, etc.]
-        
-    ✅ Company Type:
-    [List company types, one per line]
-        
-    ✅ Keywords in Company Name:
-    [List relevant keywords in quotation marks]
-        
-    ✅ Boolean Search Query:
-    [Provide a sample boolean search string using OR operators]
-        
-    Best Intent Data Signals
-    🔹 [Signal 1] (Detailed explanation with specific business implications)
-    🔹 [Signal 2] (Detailed explanation with specific business implications)
-    🔹 [Signal 3] (Detailed explanation with specific business implications)
-    🔹 [Signal 4] (Detailed explanation with specific business implications)
+            🎯 Sales Navigator Filters:
+            ✅ Job Titles (Business Decision-Makers & Leaders):
+            [List 20-30 non-finance job titles, one per line, focusing on business owners, executives, and operational leadership who would make decisions about hiring financial services. Include multiple variants of similar roles (Owner, Co-Owner, Founder, Co-Founder, etc.)]
+            Examples:
+            Owner
+            Co-Owner
+            Founder
+            Co-Founder
+            CEO
+            President
+            Managing Director
+            Managing Partner
+            Partner
+            Director
+            Executive Director
+            Chief Operating Officer
+            COO
+            VP of Operations
+            General Manager
+                
+            ✅ Industry:
+            [List 3-5 industry categories, one per line]
+                
+            ✅ Company Headcount:
+            [Specify employee range using LinkedIn's standard brackets: 11-50, 51-200, 201-500, etc.]
+                
+            ✅ Company Type:
+            [List company types, one per line]
+                
+            ✅ Keywords in Company Name:
+            [List relevant keywords in quotation marks]
+                
+            ✅ Boolean Search Query:
+            [Provide a sample boolean search string using OR operators]
+                
+            Best Intent Data Signals
+            🔹 [Signal 1] (Detailed explanation with specific business implications)
+            🔹 [Signal 2] (Detailed explanation with specific business implications)
+            🔹 [Signal 3] (Detailed explanation with specific business implications)
+            🔹 [Signal 4] (Detailed explanation with specific business implications)
+          "
+      },
+      {...same format above for the next segments}
+    ]
 
     IMPORTANT INSTRUCTIONS:
+    - Format your ENTIRE response as a valid JSON array that can be parsed with JSON.parse()
+    - Do NOT include any text before or after the JSON
+    - Please provide a valid JSON response without markdown formatting or additional text.
+    - Maintain the exact structure shown above
     - Use the exact emoji formatting shown above (1️⃣, 👉, 🎯, ✅, 🔹)
     - Do NOT include any introductory text, disclaimers, or conclusions
     - Start immediately with "1️⃣" and the first segment name
@@ -121,10 +132,27 @@ export async function POST(request: Request) {
           details: responseText 
         }, { status: 500 });
       }
+      
+      const content = data.choices[0].message.content;
+      
+      // Try to parse the content as JSON
+      try {
+        // This will throw if content is not valid JSON
+        const parsedSegments = JSON.parse(content);
         
-      return NextResponse.json({ 
-        result: data.choices[0].message.content 
-      });
+        // Return both the formatted text for display and structured data for selection
+        return NextResponse.json({
+          result: JSON.stringify(parsedSegments, null, 2), // Pretty JSON for display
+          segments: parsedSegments // Structured data for segment selection
+        });
+      } catch (jsonError) {
+        console.error('Error parsing LLM response as JSON:', jsonError);
+        // If parsing fails, return the raw content
+        return NextResponse.json({ 
+          result: content,
+          error: 'Failed to parse LLM response as JSON. Returning raw content.'
+        });
+      }
     } catch (parseError) {
       console.error('Error parsing JSON response:', parseError);
       return NextResponse.json({ 
