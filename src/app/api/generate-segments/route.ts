@@ -12,30 +12,66 @@ export async function POST(request: Request) {
     const { industry } = await request.json();
     
     const prompt = `
-Instruction
-You are a Product Market Fit expert specializing in Go-To-Market Engineering, Revenue Operations (RevOps), and Message-Market Fit. Your objective is to optimize outbound campaigns for a Fractional CFO targeting the ${industry} industry via cold email and LinkedIn. Your task is to identify the best B2B subsectors to refine the target segment list for companies needing a 10-15 person Fractional CFO team.
+    ## Accounting Advisory Services - Market Fit & Segment Research for ${industry}
 
-Task
-Determine 7 ${industry} industry segments that would be the best fit for high-ticket, recurring CFO services. These must meet:
-1. Financial Viability: $5M–$150M annual revenue (can afford $15K–$30K/month retainers)
-2. Recurring Need Justification: Requires ongoing financial strategy, not one-time services
-3. Accessibility: CEOs/CFOs reachable via LinkedIn/email/phone
-4. Service Fit: Needs budgeting, cash flow management, KPI tracking, or financial advisory
+    ### Introduction & Context
 
-Output Format
-Ranked list of 7 subsectors with this structure for each entry:
-1. [Subsector Name]
-   - Justification for CFO Services: [Specific need for recurring financial leadership]
-   - Estimated Market US Potential: [X companies, $Y–$Z revenue]
-   - Ease of Outreach: [Low/Medium/High based on decision-maker visibility]
+    Accountants often undervalue their services by treating them as mere "compliance" work (e.g., tax returns, basic bookkeeping). However, these same professionals can (and should) offer **high-ticket recurring services** such as advisory, consulting, or niche-specific guidance. This prompt helps identify the most profitable segments within the ${industry} industry where accounting professionals can provide high-value, consultative offerings that solve deeper client pain points and justify higher pricing.
 
-Example:
-1. Medical Device Distributors
-   - Justification for CFO Services: Complex inventory financing and recurring FDA compliance budgeting needs
-   - Estimated Market US Potential: 600 companies, $10M–$45M revenue
-   - Ease of Outreach: Medium
+    ---
 
-Provide only the numbered list without markdown or additional explanations. Arrange them from Highest to Lowest Profiting Segments for Fractional CFO Services.`;
+    ### Task
+
+    Determine 5-7 ${industry} industry segments that would be the best fit for high-ticket, recurring accounting advisory services. These must meet:
+
+    1. **Financial Viability**: $5M–$150M annual revenue (can afford $15K–$30K/month retainers)
+    2. **Recurring Need Justification**: Requires ongoing financial strategy, not one-time services
+    3. **Accessibility**: Decision-makers reachable via LinkedIn/email/phone
+    4. **Service Fit**: Needs budgeting, cash flow management, KPI tracking, or financial advisory
+
+    ---
+
+    ### Output Format
+
+    Present 5-7 well-researched market segments (niches) within the ${industry} industry, ranked from highest to lowest potential profitability. Use the following visual format:
+
+   
+    ======================================
+    SEGMENT 1: [SEGMENT NAME]
+    ======================================
+
+    - **Justification for Advisory Services**: [Specific need for recurring financial leadership]
+    - **Estimated Market US Potential**: [X companies, $Y–$Z revenue range]
+    - **Ease of Outreach**: [Low/Medium/High based on decision-maker visibility]
+    - **Pain Points**: [Key financial challenges this segment faces]
+
+    ======================================
+    SEGMENT 2: [SEGMENT NAME]
+    ======================================
+
+    - **Justification for Advisory Services**: [Specific need for recurring financial leadership]
+    - **Estimated Market US Potential**: [X companies, $Y–$Z revenue range]
+    - **Ease of Outreach**: [Low/Medium/High based on decision-maker visibility]
+    - **Pain Points**: [Key financial challenges this segment faces]
+    
+
+    *(continue same format for all 5-7 segments)*
+
+    ---
+
+    ### Key Targeting Criteria
+
+    When identifying the best segments, prioritize:
+    - Complex financial operations requiring ongoing expertise
+    - Regulatory or compliance challenges specific to ${industry} subsectors
+    - Growth-stage companies needing financial strategy but not ready for full-time financial leadership
+    - Businesses with potential for value-based pricing of advisory services
+    
+    Important Notes:
+    - DO NOT USE ANY CONVERSATIONAL WORDS OR LIKE INTROS, GIVE THE OUTPUT DIRECTLY.
+
+    Arrange segments from Highest to Lowest Profiting Segments for Accounting Advisory Services with clear visual separation between each segment.
+    `;
     
     // Use non-streaming approach for this first prompt
     const response = await fetch('https://openrouter.ai/api/v1/chat/completions', {

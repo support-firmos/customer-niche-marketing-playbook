@@ -20,8 +20,7 @@ export default function Home() {
   const [step3GeneratedSalesNav, setStep3GeneratedSalesNav] = useState<string | null>(null);
   const [step3Segments, setStep3Segments] = useState<Segment[] | null>(null);
   const [step4DeepSegmentResearch, setStep4DeepSegmentResearch] = useState<string | null>(null);
-
-  //const [step4GeneratedPlaybook, setStep4GeneratedPlaybook] = useState<string | null>(null);
+  const [step5GeneratedPlaybook, setStep5GeneratedPlaybook] = useState<string | null>(null);
   
   const [isGenerating, setIsGenerating] = useState(false);
   const [isGeneratingNextStep, setIsGeneratingNextStep] = useState(false);
@@ -37,6 +36,7 @@ export default function Home() {
     setStep3GeneratedSalesNav(null);
     setStep3Segments(null);
     setStep4DeepSegmentResearch(null);
+    setStep5GeneratedPlaybook(null);
     setProgressStatus('Identifying target segments...');
     setCurrentIndustry(formData.input);
 
@@ -110,6 +110,7 @@ export default function Home() {
   const generateSalesNav = async (segments: string) => {
     setError(null);
     setIsGenerating(true);
+    setIsGeneratingNextStep(true);
     setStep3GeneratedSalesNav('');
     //setStep2EnhancedResearch(null);
     setProgressStatus('Creating LinkedIn Sales Navigator strategy...');
@@ -161,6 +162,7 @@ export default function Home() {
     } finally {
       setIsGenerating(false);
       setProgressStatus('');
+      setIsGeneratingNextStep(false);
     }
   };
 
@@ -222,6 +224,55 @@ export default function Home() {
     }
   };
 
+  const generateMarketingPlaybook = async (input: string) => {
+    setError(null);
+    setIsGenerating(true);
+    setStep5GeneratedPlaybook('');
+    //setStep2EnhancedResearch(null);
+    setProgressStatus('Creating Marketing Playbook...');
+    setIsGeneratingNextStep(true);
+
+    try {
+      const response = await fetch('/api/playbook', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ segmentInfo: input }),
+      });
+
+      if (!response.ok) {
+        throw new Error(`Failed to generate playbook: ${response.status}`);
+      }
+
+      const data = await response.json();
+
+      console.log('Marketing Playbook response:', data);
+
+      if (!data.result) {
+        throw new Error('No result returned from playbook generation');
+      }
+      
+      // Check if there's an error in the response
+      if (data.error) {
+        console.warn('Warning from Marketing Playbook API:', data.error);
+      }
+      
+      // The result should now be a readable text format
+      const displayContent = data.result.trim();
+      console.log("Display content preview:", displayContent.substring(0, 100) + "...");
+      
+      // Set the display content
+      setStep5GeneratedPlaybook(displayContent);
+      
+    } catch (error) {
+      console.error('Error generating playbook:', error);
+      setError('An error occurred while generating the marketing playbook. Please try again.');
+      setStep5GeneratedPlaybook(null);
+    } finally {
+      setIsGeneratingNextStep(false);
+      setProgressStatus('');
+    }
+  };
+
 
   const resetGenerator = () => {
     setStep1GeneratedResearch(null);
@@ -229,16 +280,18 @@ export default function Home() {
     setStep3GeneratedSalesNav(null);
     setStep3Segments(null);
     setStep4DeepSegmentResearch(null);
+    setStep5GeneratedPlaybook(null);
     setError(null);
     setCurrentIndustry("");
   };
 
   // Determine which content to show
   
-  const displayContent = step4DeepSegmentResearch || step3GeneratedSalesNav || step2EnhancedResearch || step1GeneratedResearch;
+  const displayContent = step5GeneratedPlaybook || step4DeepSegmentResearch || step3GeneratedSalesNav || step2EnhancedResearch || step1GeneratedResearch;
   const isStep2Done = !!step2EnhancedResearch;
   const isStep3Done = !!step3GeneratedSalesNav;
   const isStep4Done = !!step4DeepSegmentResearch;
+  const isStep5Done = !!step5GeneratedPlaybook;
   //const isStep5Done = !!step4GeneratedPlaybook;
 
 const handleSteps = () => {
@@ -259,6 +312,13 @@ const handleSteps = () => {
       action: (content: string, selectedSegment?: Segment) => 
         generateDeepSegmentResearch(selectedSegment),
       buttonText: "Generate Deep Segment Research"
+    };
+  }
+  if (!isStep5Done) {
+    return {
+      action: (content: string) => 
+        generateMarketingPlaybook(content),
+      buttonText: "Generate Marketing Playbook"
     };
   }
   return undefined;
@@ -289,7 +349,7 @@ const handleSteps = () => {
               onNextSteps={handleSteps()?.action}
               nextStepButtonText={handleSteps()?.buttonText}
               isGeneratingNextStep={isGeneratingNextStep}
-              resultType={step4DeepSegmentResearch ? 'deepSegment' : step3GeneratedSalesNav ? 'salesNav' : step2EnhancedResearch ? 'enhanced' : 'segments'}
+              resultType={step5GeneratedPlaybook ? 'playbook' : step4DeepSegmentResearch ? 'deepSegment' : step3GeneratedSalesNav ? 'salesNav' : step2EnhancedResearch ? 'enhanced' : 'segments'}
               segments={step3Segments || []}
             />
           ) : (

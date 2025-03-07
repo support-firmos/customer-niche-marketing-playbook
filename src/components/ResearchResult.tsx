@@ -15,16 +15,14 @@ interface ResearchResultProps {
   currentStepDone?: boolean;
   isGeneratingNextStep?: boolean;
   nextStepButtonText?: string;
-  resultType?: 'segments' | 'enhanced' | 'salesNav' | 'deepSegment';
+  resultType?: 'segments' | 'enhanced' | 'salesNav' | 'deepSegment' | 'playbook';
   segments?: Segment[];
 }
 
 export default function ResearchResult({ 
   content, 
-  industry = "", 
   onReset, 
   onNextSteps,
-  currentStepDone = false,
   isGeneratingNextStep = false,
   nextStepButtonText,
   resultType,
@@ -75,7 +73,8 @@ export default function ResearchResult({
           : resultType === 'enhanced' 
             ? 'Enhanced Market Research' 
             : resultType === 'segments' ? 'Market Research' :
-            resultType === 'deepSegment' ? 'Deep Segment Research' : undefined}
+            resultType === 'deepSegment' ? 'Deep Segment Research' : 
+            resultType === 'playbook' ? 'Marketing Playbook' : undefined}
       </h2>
         <div className="flex space-x-2">
           <Button 
@@ -171,7 +170,8 @@ export default function ResearchResult({
           <p className="text-[#8a8f98]">
             {resultType === 'salesNav'  ? 'Creating deep segment research...' 
               : resultType === 'segments' ? 'Enhancing segments...' 
-              : resultType === 'enhanced' ? 'Creating LinkedIn Sales Navigator strategy...' : undefined }
+              : resultType === 'enhanced' ? 'Creating LinkedIn Sales Navigator strategy...' 
+              : resultType === 'playbook' ? 'Creating Marketing Playbook...' : undefined }
           </p>
         </div>
       )}
