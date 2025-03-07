@@ -57,7 +57,9 @@ export default function ResearchResult({
     if (onNextSteps) {
       // If it's the Sales Navigator step and segments are available
       if (resultType === 'salesNav' && segments.length > 0 && selectedSegmentIndex !== null) {
-        await onNextSteps(segments[selectedSegmentIndex].content);
+        console.log('Selected segment index:', selectedSegmentIndex);
+        console.log('Selected segment:', segments[selectedSegmentIndex]);
+        await onNextSteps(content, segments[selectedSegmentIndex]);
       } else {
         await onNextSteps(content);
       }

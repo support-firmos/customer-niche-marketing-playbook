@@ -127,24 +127,37 @@ export default function Home() {
 
       const data = await response.json();
 
+      console.log('Sales nav response:', data);
+
       if (!data.result) {
         throw new Error('No result returned from strategy generation');
       }
       
+      // Check if there's an error in the response
+      if (data.error) {
+        console.warn('Warning from sales-nav API:', data.error);
+      }
+      
       let cleanJSON = data.result.trim();
+      // This should no longer be necessary as we're cleaning in the API, but keeping as a fallback
       if (cleanJSON.startsWith("```json")) {
           cleanJSON = cleanJSON.slice(7, -3).trim();  // Remove ```json and trailing ```
       } else if (cleanJSON.startsWith("```")) {
           cleanJSON = cleanJSON.slice(3, -3).trim();  // Remove ``` and trailing ```
       }
-      console.log("cleanJSON",cleanJSON);
+      console.log("cleanJSON", cleanJSON);
 
       setStep3GeneratedSalesNav(cleanJSON);
 
-      const segmentsJSON = JSON.parse(cleanJSON);
-      console.log('segments',segmentsJSON);
-      if (segmentsJSON) {
-        setStep3Segments(segmentsJSON);
+      try {
+        const segmentsJSON = JSON.parse(cleanJSON);
+        console.log('segments', segmentsJSON);
+        if (segmentsJSON) {
+          setStep3Segments(segmentsJSON);
+        }
+      } catch (error) {
+        console.error('Error parsing segments JSON:', error);
+        setError('Failed to parse segments. Please try again.');
       }
       
     } catch (error) {
@@ -163,6 +176,8 @@ export default function Home() {
       return;
     }
     
+    console.log('Selected segment for deep research:', selectedSegment);
+    
     setError(null);
     setIsGeneratingNextStep(true);
     setProgressStatus('Creating deep segment research...');
@@ -180,13 +195,48 @@ export default function Home() {
 
       const data = await response.json();
       
+      console.log('Deep segment research response:', data);
+      
       if (!data.result) {
         throw new Error('No result returned from deep segment research');
       }
       
+      // Check if the result is a JSON string and try to parse it
+      let resultContent = data.result;
+      try {
+        // Check if it looks like JSON
+        if (typeof resultContent === 'string' &&
+            (resultContent.trim().startsWith('[') || resultContent.trim().startsWith('{'))) {
+          const parsedResult = JSON.parse(resultContent);
+          console.log('Parsed result:', parsedResult);
+          
+          // If it's an array of segments, use the selected segment's content
+          if (Array.isArray(parsedResult) && selectedSegment) {
+            // Find the matching segment by name
+            const matchingSegment = parsedResult.find(
+              segment => segment.name === selectedSegment.name
+            );
+            
+            if (matchingSegment) {
+              console.log('Found matching segment:', matchingSegment);
+              resultContent = matchingSegment.content;
+            }
+          }
+        }
+      } catch (error) {
+        console.log('Not JSON or parsing failed:', error);
+        // Keep the original result if parsing fails
+      }
+      
       //setStep3GeneratedSalesNav(null); // Hide sales nav
       setStep3Segments(null);
-      setStep4DeepSegmentResearch(data.result);
+      setStep4DeepSegmentResearch(resultContent);
+      
+      console.log('Deep segment research set:',
+        typeof resultContent === 'string'
+          ? resultContent.substring(0, 100) + '...'
+          : JSON.stringify(resultContent).substring(0, 100) + '...'
+      );
       
     } catch (error) {
       console.error('Error generating deep segment research:', error);

@@ -9,11 +9,41 @@ export const runtime = 'nodejs';
 
 export async function POST(request: Request) {
   try {
-    const { segmentInfo } = await request.json();
+    const requestData = await request.json();
+    let segmentInfo;
+    console.log('Request data:', JSON.stringify(requestData));
     
-    if (!segmentInfo || typeof segmentInfo !== 'string') {
+    // Handle both string and object formats
+    if (typeof requestData.segmentInfo === 'string') {
+      segmentInfo = requestData.segmentInfo;
+    } else if (requestData.segmentInfo && typeof requestData.segmentInfo === 'object') {
+      console.log('Segment info is an object:', requestData.segmentInfo);
+      
+      // If it's an object with content property, use that
+      if (requestData.segmentInfo.content) {
+        segmentInfo = requestData.segmentInfo.content;
+        console.log('Using content property:', segmentInfo.substring(0, 100) + '...');
+      } else {
+        // Otherwise stringify the whole object
+        segmentInfo = JSON.stringify(requestData.segmentInfo);
+        console.log('Stringified object:', segmentInfo.substring(0, 100) + '...');
+      }
+    } else {
+      console.log('Invalid segment info:', requestData.segmentInfo);
       return NextResponse.json({ error: 'Invalid segment information' }, { status: 400 });
     }
+    
+    // Extract segment name for the title
+    let segmentName = "";
+    if (typeof requestData.segmentInfo === 'object' && requestData.segmentInfo.name) {
+      segmentName = requestData.segmentInfo.name;
+      console.log('Extracted segment name:', segmentName);
+    }
+    
+    // Remove emoji numbers if present in the segment name
+    segmentName = segmentName.replace(/^\d️⃣\s*/, '');
+    console.log('Cleaned segment name:', segmentName);
+    segmentName = segmentName.replace(/^\d️⃣\s*/, '');
     
     const prompt = `You are an empathetic B2B Researcher capable of deeply understanding and embodying the Ideal Customer Profile (ICP) for CFO services.
 
@@ -63,7 +93,7 @@ Provide exactly 5 items per category. There is a guide below to help you write e
     Decision-Making Process 2 - Who else is involved in the decision-making process within their company?
     Decision-Making Process 3 - What criteria are most important to them when selecting a solution?
     Decision-Making Process 4- How do they gather and assess information before making a decision?
-    Decision-Making Process 5 - What external resources (reviews, testimonials, case studies) do they rely on during the decision-making process?  
+    Decision-Making Process 5 - What external resources (reviews, testimonials, case studies) do they rely on during the decision-making process?
 
 ### INFLUENCES (Identify the key factors and individuals that influence the target audience's choices)
     Influence 1 - Who are the thought leaders or industry experts your ideal customer trusts the most?
@@ -81,7 +111,7 @@ Provide exactly 5 items per category. There is a guide below to help you write e
 
 ## Response Format
 
-  🔎 🔎 🔎 MARKET RESEARCH - [SEGMENT TITLE] 🔎 🔎 🔎
+  🔎 🔎 🔎 MARKET RESEARCH - ${segmentName} 🔎 🔎 🔎
 
   ⚠️ FEARS ⚠️
 
@@ -168,103 +198,50 @@ Important notes:
 `;
 
     
-    // Create a new Response and StreamingTextResponse for proper streaming
-    const encoder = new TextEncoder();
-    const stream = new ReadableStream({
-      async start(controller) {
-        try {
-          // Make the API request
-          const response = await fetch('https://openrouter.ai/api/v1/chat/completions', {
-            method: 'POST',
-            headers: {
-              'Content-Type': 'application/json',
-              'Authorization': `Bearer ${process.env.OPENROUTER_API_KEY}`,
-              'HTTP-Referer': process.env.NEXT_PUBLIC_SITE_URL || 'https://deep-segment-researcher.vercel.app/',
-              'X-Title': 'Deep Segment Research',
-            },
-            body: JSON.stringify({
-              model: 'google/gemini-2.0-flash-001',
-              messages: [{ role: 'user', content: prompt }],
-              stream: true,
-              max_tokens: 25000,
-              temperature: 1,
-            }),
-          });
-          
-          if (!response.ok) {
-            const errorText = await response.text();
-            controller.error(`OpenRouter API error: ${response.status}, ${errorText}`);
-            return;
-          }
-          
-          // Process the stream
-          const reader = response.body?.getReader();
-          if (!reader) {
-            controller.error('Response body is not readable');
-            return;
-          }
-          
-          // Read and process the stream chunks
-          const decoder = new TextDecoder();
-          while (true) {
-            const { done, value } = await reader.read();
-            if (done) break;
-            
-            // Process each line in the SSE chunk
-            const text = decoder.decode(value, { stream: true });
-            const lines = text.split('\n');
-            
-            // Buffer to handle incomplete JSON chunks
-            let buffer = '';
-            
-            for (const line of lines) {
-              if (line.startsWith('data: ')) {
-                const data = line.substring(6);
-                if (data === '[DONE]') continue;
-                
-                // Append to buffer and try parsing
-                buffer += data;
-                
-                try {
-                  // Attempt to parse the buffer
-                  const parsedData = JSON.parse(buffer);
-                  const content = parsedData.choices?.[0]?.delta?.content || '';
-                  
-                  if (content) {
-                    // Send the content directly to the client
-                    controller.enqueue(encoder.encode(content));
-                  }
-                  
-                  // Clear buffer on successful parse
-                  buffer = '';
-                } catch (error) {
-                  // If parsing fails, keep the buffer for next chunk
-                  if (error instanceof SyntaxError) {
-                    // Wait for next chunk to complete the JSON
-                    continue;
-                  } else {
-                    console.error('Error parsing SSE data:', error);
-                    buffer = ''; // Clear buffer on other errors
-                  }
-                }
-              }
-            }
-          }
-          
-          // Signal the end of the stream
-          controller.close();
-        } catch (error) {
-          controller.error(error);
-        }
-      }
+    console.log('Segment info:', segmentInfo);
+    console.log('Segment name:', segmentName);
+    
+    // Make the API request without streaming
+    const response = await fetch('https://openrouter.ai/api/v1/chat/completions', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${process.env.OPENROUTER_API_KEY}`,
+        'HTTP-Referer': process.env.NEXT_PUBLIC_SITE_URL || 'https://deep-segment-researcher.vercel.app/',
+        'X-Title': 'Deep Segment Research',
+      },
+      body: JSON.stringify({
+        model: 'google/gemini-2.0-flash-001',
+        messages: [{ role: 'user', content: prompt }],
+        stream: false, // Don't stream the response
+        max_tokens: 25000,
+        temperature: 1,
+      }),
     });
     
-    // Return the streaming response
-    return new Response(stream, {
-      headers: {
-        'Content-Type': 'text/plain; charset=utf-8',
-        'Cache-Control': 'no-cache',
-      },
+    if (!response.ok) {
+      const errorText = await response.text();
+      throw new Error(`OpenRouter API error: ${response.status}, ${errorText}`);
+    }
+    
+    // Parse the response as JSON
+    const data = await response.json();
+    let content = data.choices?.[0]?.message?.content || '';
+    
+    console.log('API response content (raw):', content.substring(0, 100) + '...');
+    
+    // Clean up the content if it contains markdown code blocks
+    if (content.includes('```json')) {
+      content = content.replace(/```json\n/g, '').replace(/\n```/g, '');
+    } else if (content.includes('```')) {
+      content = content.replace(/```\n/g, '').replace(/\n```/g, '');
+    }
+    
+    console.log('API response content (cleaned):', content.substring(0, 100) + '...');
+    
+    // Return the content as JSON
+    return NextResponse.json({
+      result: content
     });
     
   } catch (error) {

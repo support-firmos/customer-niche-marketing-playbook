@@ -133,7 +133,16 @@ export async function POST(request: Request) {
         }, { status: 500 });
       }
       
-      const content = data.choices[0].message.content;
+      let content = data.choices[0].message.content;
+      
+      // Clean up the content if it contains markdown code blocks
+      if (content.includes('```json')) {
+        content = content.replace(/```json\n/g, '').replace(/\n```/g, '');
+      } else if (content.includes('```')) {
+        content = content.replace(/```\n/g, '').replace(/\n```/g, '');
+      }
+      
+      console.log('Cleaned content:', content.substring(0, 100) + '...');
       
       // Try to parse the content as JSON
       try {
@@ -148,7 +157,7 @@ export async function POST(request: Request) {
       } catch (jsonError) {
         console.error('Error parsing LLM response as JSON:', jsonError);
         // If parsing fails, return the raw content
-        return NextResponse.json({ 
+        return NextResponse.json({
           result: content,
           error: 'Failed to parse LLM response as JSON. Returning raw content.'
         });
