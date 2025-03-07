@@ -132,7 +132,7 @@ export async function POST(request: Request) {
         }, { status: 500 });
       }
       
-      let content = data.choices[0].message.content;
+      const content = data.choices[0].message.content;
       
       // More aggressive cleaning of the content to handle various LLM formatting issues
       let cleanedContent = content;
