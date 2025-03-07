@@ -6,7 +6,7 @@ import { z } from 'zod';
 import Button from './Button';
 
 const formSchema = z.object({
-  industry: z.string().min(2, 'Industry name is required'),
+  input: z.string().min(2, 'Industry name is required'),
 });
 
 type FormValues = z.infer<typeof formSchema>;
@@ -38,14 +38,14 @@ export default function ResearchForm({ onSubmit }: { onSubmit: (values: FormValu
           Target Industry
         </label>
         <input
-          id="industry"
+          id="input"
           type="text"
           className="input-field text-lg"
           placeholder="e.g., Healthcare, Manufacturing, SaaS, Finance"
-          {...register('industry')}
+          {...register('input')}
         />
-        {errors.industry && (
-          <p className="mt-2 text-red-400 text-sm">{errors.industry.message}</p>
+        {errors.input && (
+          <p className="mt-2 text-red-400 text-sm">{errors.input.message}</p>
         )}
       </div>
       

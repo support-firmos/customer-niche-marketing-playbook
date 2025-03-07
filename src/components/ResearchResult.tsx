@@ -6,18 +6,22 @@ interface ResearchResultProps {
   content: string;
   industry?: string;
   onReset: () => void;
-  onEnhance?: (content: string, industry: string) => Promise<void>;
-  isEnhanced?: boolean;
-  isEnhancing?: boolean;
+  onNextSteps?: (content: string) => Promise<void>;
+  currentStepDone?: boolean;
+  isGeneratingNextStep?: boolean;
+  nextStepButtonText?: string;
+  resultType?: 'segments' | 'enhanced' | 'salesNav';
 }
 
 export default function ResearchResult({ 
   content, 
   industry = "", 
   onReset, 
-  onEnhance,
-  isEnhanced = false,
-  isEnhancing = false
+  onNextSteps,
+  currentStepDone = false,
+  isGeneratingNextStep = false,
+  nextStepButtonText,
+  resultType
 }: ResearchResultProps) {
   const [copySuccess, setCopySuccess] = useState('');
   
@@ -41,16 +45,22 @@ export default function ResearchResult({
     document.body.removeChild(element);
   };
 
-  const handleEnhance = async () => {
-    if (onEnhance) {
-      await onEnhance(content, industry);
+  const handleNextStep = async () => {
+    if (onNextSteps) {
+      await onNextSteps(content);
     }
   };
 
   return (
     <div className="space-y-6">
       <div className="flex justify-between items-center mb-4">
-        <h2 className="text-xl font-bold text-[#f7f8f8]">Market Research</h2>
+      <h2 className="text-xl font-bold text-[#f7f8f8]">
+        {resultType === 'salesNav' 
+          ? 'Sales Navigator Strategy' 
+          : resultType === 'enhanced' 
+            ? 'Enhanced Market Research' 
+            : 'Market Research'}
+      </h2>
         <div className="flex space-x-2">
           <Button 
             variant="outline" 
@@ -85,20 +95,20 @@ export default function ResearchResult({
         </pre>
       </div>
 
-      {!isEnhanced && !isEnhancing && onEnhance && (
+      {!isGeneratingNextStep && onNextSteps && (
         <div className="flex justify-center mt-4">
           <Button
             variant="primary"
             size="md"
-            onClick={handleEnhance}
+            onClick={handleNextStep}
             className="bg-[#3B82F6] text-white hover:bg-[#2563EB] border-none"
           >
-            Enhance Segments
+            { nextStepButtonText || "Continue"}
           </Button>
         </div>
       )}
 
-      {isEnhancing && (
+      {isGeneratingNextStep && (
         <div className="text-center mt-4">
           <p className="text-[#8a8f98]">Enhancing segments...</p>
         </div>
