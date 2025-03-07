@@ -113,7 +113,7 @@ Provide exactly 5 items per category. There is a guide below to help you write e
 
 🔎🔎🔎 MARKET RESEARCH - \${segmentName} 🔎🔎🔎
 
-------------------------------------------------------------------------------------------------
+---------------------------------------------------------------------------------
 
 ⚠️ FEARS ⚠️
 
@@ -151,7 +151,7 @@ Provide exactly 5 items per category. There is a guide below to help you write e
 💡 How Advisory Services Can Help
 [Comprehensively discuss how high-ticket advisory services address it. Use paragraph and/or bullet points.]
 
-------------------------------------------------------------------------------------------------
+---------------------------------------------------------------------------------
 
 ⚙️ PAINS ⚙️
 
@@ -189,7 +189,7 @@ Provide exactly 5 items per category. There is a guide below to help you write e
 💡 How Advisory Services Can Help
 [Comprehensively discuss how high-ticket advisory services address it. Use paragraph and/or bullet points.]
 
-------------------------------------------------------------------------------------------------
+---------------------------------------------------------------------------------
 
 ⛔ OBJECTIONS ⛔
 
@@ -227,7 +227,7 @@ Provide exactly 5 items per category. There is a guide below to help you write e
 💡 How Advisory Services Can Help
 [Comprehensively discuss and counter by providing benefits of high-ticket advisory services. Use paragraph and/or bullet points.]
 
-------------------------------------------------------------------------------------------------
+---------------------------------------------------------------------------------
 
 🎯 GOALS 🎯
 
@@ -265,7 +265,7 @@ Provide exactly 5 items per category. There is a guide below to help you write e
 💡 How Advisory Services Can Help
 [Comprehensively discuss how high-ticket advisory services help attain the goal. Use paragraph and/or bullet points.]
 
-------------------------------------------------------------------------------------------------
+---------------------------------------------------------------------------------
 
 💎 VALUES 💎
 
@@ -303,7 +303,7 @@ Provide exactly 5 items per category. There is a guide below to help you write e
 💡 How Advisory Services Can Help
 [Comprehensively discuss how high-ticket advisory services help preserve that value. Use paragraph and/or bullet points.]
 
-------------------------------------------------------------------------------------------------
+---------------------------------------------------------------------------------
 
 🔄 DECISION-MAKING PROCESSES 🔄
 
@@ -341,7 +341,7 @@ Provide exactly 5 items per category. There is a guide below to help you write e
 💡 How Advisory Services Can Help
 [Comprehensively discuss how high-ticket advisory services help fit in or improve that process. Use paragraph and/or bullet points.]
 
-------------------------------------------------------------------------------------------------
+---------------------------------------------------------------------------------
 
 🔊 INFLUENCES 🔊
 
@@ -379,7 +379,7 @@ Provide exactly 5 items per category. There is a guide below to help you write e
 💡 How Advisory Services Can Help
 [Comprehensively discuss how high-ticket advisory services help leverage this influence. Use paragraph and/or bullet points.]
 
-------------------------------------------------------------------------------------------------
+---------------------------------------------------------------------------------
 
 📱 COMMUNICATION PREFERENCES 📱
 
