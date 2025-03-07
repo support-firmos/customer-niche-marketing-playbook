@@ -16,19 +16,47 @@ export async function POST(request: Request) {
     }
     
     const prompt = `
-    You are a market research expert specializing in high-ticket fractional CFO services. Below is a list of promising segments in the ${industry} industry:
-    
-    ${segments.substring(0, 20000)}
-    
-    Provide an enhanced analysis in English only, starting with the title "Deep Dive: Best ${industry} Segments for High-Ticket Fractional CFO Services". Adjust the capitalization of the title if needed. Do not include introductory sentences like "Okay, here's an analysis...". For each segment, use the following format with numbered headings:
-    
-    A. **Why This Segment?** - Explain in 3 sentences why this segment needs fractional CFO services (e.g., complex financial needs, growth demands).
-    B. **High-Ticket Justification** - List 4 specific financial challenges or tasks in bullet points that justify premium CFO services (e.g., financial modeling, investor reporting).
-    C. **How Lucrative Is This Market?** - Assess market size, growth trends, or profitability potential in 2-3 sentences.
-    D. **Marketing Angles** - Provide 3 compelling marketing messages in bullet points tailored to this segment’s needs.
-    
-    Keep each section concise and actionable. Structure the response with the title followed by segment headings (e.g., "1. Real Estate Development Firms") and numbered subsections.
-    `;
+You are a market research expert specializing in high-ticket accounting advisory services. Below is a list of promising segments in the ${industry} industry:
+
+${segments.substring(0, 20000)}
+
+## FORMAT INSTRUCTIONS
+
+Create an enhanced analysis with clear visual formatting. Begin with this centered title:
+
+***********************************************************************
+#  DEEP DIVE: BEST ${industry} SEGMENTS FOR HIGH-TICKET ADVISORY/ACCOUNTING SERVICES
+***********************************************************************
+
+Do not include introductory sentences.
+
+For each segment, use this exact visual formatting:
+
+======================================
+SEGMENT #: [SEGMENT NAME]
+======================================
+
+A. **WHY THIS SEGMENT?**
+   Explain in 3 sentences why this segment needs premium accounting advisory services.
+
+B. **HIGH-TICKET JUSTIFICATION**
+   • [Specific financial challenge/task]
+   • [Specific financial challenge/task]
+   • [Specific financial challenge/task]
+   • [Specific financial challenge/task]
+
+C. **HOW LUCRATIVE IS THIS MARKET?**
+   Assess market size, growth trends, and profitability potential in 2-3 sentences.
+
+D. **MARKETING ANGLES**
+   • [Compelling marketing message #1]
+   • [Compelling marketing message #2]
+   • [Compelling marketing message #3]
+
+------------------------------------------
+
+Keep each section concise and actionable. Maintain consistent formatting with clear visual separation between segments and sections.
+`;
     
     const response = await fetch('https://openrouter.ai/api/v1/chat/completions', {
       method: 'POST',
