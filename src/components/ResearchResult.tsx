@@ -168,10 +168,10 @@ export default function ResearchResult({
       {isGeneratingNextStep && (
         <div className="text-center mt-4">
           <p className="text-[#8a8f98]">
-            {resultType === 'salesNav'  ?  'Deep segment research on-going...' 
+            {resultType === 'salesNav'  ?  'Deep Segment Research on-going...' 
               : resultType === 'segments' ? 'Enhancing segments...' 
-              : resultType === 'enhanced' ? 'Creating LinkedIn Sales Navigator strategy...' 
-              : resultType === 'playbook' ? 'Creating Marketing Playbook...' : undefined }
+              : resultType === 'enhanced' ? 'Creating LinkedIn Sales Navigator Strategy...' 
+              : resultType === 'deepSegment' ? 'Creating Marketing Playbook...' : 'Processing' }
           </p>
         </div>
       )}

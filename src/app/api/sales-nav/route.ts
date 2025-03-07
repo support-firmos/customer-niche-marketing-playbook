@@ -14,7 +14,6 @@ export async function POST(request: Request) {
     if (!segmentInfo || typeof segmentInfo !== 'string') {
       return NextResponse.json({ error: 'Invalid segment information' }, { status: 400 });
     }
-    
     // Modified section of the prompt in src/app/api/generate-segments/route.ts
     const prompt = `
     You are a specialized LinkedIn Sales Navigator outreach strategist with deep expertise in B2B targeting and account-based marketing. Your task is to transform the segment information below into a structured LinkedIn Sales Navigator targeting strategy for fractional CFO services.

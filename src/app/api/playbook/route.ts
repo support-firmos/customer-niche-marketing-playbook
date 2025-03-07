@@ -1,4 +1,4 @@
-// src/app/api/generate-segments/route.ts
+// src/app/api/playbook/route.ts
 import { NextResponse } from 'next/server';
 
 // Set maximum duration to 60 seconds
@@ -9,8 +9,9 @@ export const runtime = 'edge';
 
 export async function POST(request: Request) {
   try {
-    const { industry } = await request.json();
-    
+    const industry = await request.json();
+    console.log('test kani', industry);
+    const segment = industry.segmentInfo;
     const prompt = `You are an expert AI copywriter tasked with creating a highly detailed, industry-specific marketing playbook for CFO services based on the provided deep segment research. Your goal is to transform the segment research into concrete, actionable marketing guidance with specific examples, metrics, and strategies.
 
 ## Your Task
@@ -86,7 +87,7 @@ For each section below, provide EXACTLY 5 points that offer concrete, specific i
 ✧═══════════════✧
 
 ## Segment Research:
-${industry}
+${segment}
 
 Important notes:
 - Extract SPECIFIC details from the research - do not generalize or water down
