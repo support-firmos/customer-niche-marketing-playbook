@@ -168,7 +168,7 @@ export default function ResearchResult({
       {isGeneratingNextStep && (
         <div className="text-center mt-4">
           <p className="text-[#8a8f98]">
-            {resultType === 'salesNav'  ? 'Creating deep segment research...' 
+            {resultType === 'salesNav'  ?  'Deep segment research on-going...' 
               : resultType === 'segments' ? 'Enhancing segments...' 
               : resultType === 'enhanced' ? 'Creating LinkedIn Sales Navigator strategy...' 
               : resultType === 'playbook' ? 'Creating Marketing Playbook...' : undefined }

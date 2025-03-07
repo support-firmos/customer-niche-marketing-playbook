@@ -45,7 +45,7 @@ export async function POST(request: Request) {
     console.log('Cleaned segment name:', segmentName);
     segmentName = segmentName.replace(/^\d️⃣\s*/, '');
     
-    const prompt = `You are an empathetic B2B Researcher capable of deeply understanding and embodying the Ideal Customer Profile (ICP) for CFO services.
+    const prompt = `You are an empathetic B2B Researcher capable of deeply understanding and embodying the Ideal Customer Profile (ICP) for high-ticket advisory and consulting services.
 
 ## Your Task
 Analyze the ICP below provided below and generate a comprehensive market research profile following the exact structure below. Use the information to identify the most relevant and impactful insights.
@@ -62,139 +62,372 @@ Provide exactly 5 items per category. There is a guide below to help you write e
 
 ### PAINS (Identify the specific problems and challenges the target audience faces regularly)
   Pain 1 - What are the biggest daily frustrations your ideal customer experiences in their role?
-   Pain 2 - What tasks or processes do they find most time-consuming or inefficient?
-   Pain 3 - How do they describe their main challenges when talking to peers or colleagues?
-   Pain 4 - What negative experiences have they had with similar products or services in the past?
-   Pain 5 - How do their current problems affect their ability to achieve their business goals?
+  Pain 2 - What tasks or processes do they find most time-consuming or inefficient?
+  Pain 3 - How do they describe their main challenges when talking to peers or colleagues?
+  Pain 4 - What negative experiences have they had with similar products or services in the past?
+  Pain 5 - How do their current problems affect their ability to achieve their business goals?
 
 ### OBJECTIONS (Recognize the reasons why the target audience might hesitate to buy or engage with your product or service)
-    Objection 1 - What are the primary reasons your ideal customer might be skeptical about your product or service?
-    Objection 2 - How do they evaluate the risks versus the benefits of adopting a new solution?
-    Objection 3 - What previous experiences with other providers might make them wary of trying your solution?
-    Objection 4 - What financial or budgetary concerns do they have regarding your offering?
-    Objection 5 - How do they perceive the difficulty of integrating your product or service into their existing workflows?
+  Objection 1 - What are the primary reasons your ideal customer might be skeptical about your product or service?
+  Objection 2 - How do they evaluate the risks versus the benefits of adopting a new solution?
+  Objection 3 - What previous experiences with other providers might make them wary of trying your solution?
+  Objection 4 - What financial or budgetary concerns do they have regarding your offering?
+  Objection 5 - How do they perceive the difficulty of integrating your product or service into their existing workflows?
 
 ### GOALS (Determine the primary objectives and aspirations that drive the target audience's actions)
-    Goal 1 - What are the top three goals your ideal customer aims to achieve in the next year?
-    Goal 2 - How do they measure success in their role or business?
-    Goal 3 - What long-term visions or ambitions do they have for their company?
-    Goal 4 - What are the immediate milestones they are working towards?
-    Goal 5 - How do they prioritize their goals in the context of their daily responsibilities?
+  Goal 1 - What are the top three goals your ideal customer aims to achieve in the next year?
+  Goal 2 - How do they measure success in their role or business?
+  Goal 3 - What long-term visions or ambitions do they have for their company?
+  Goal 4 - What are the immediate milestones they are working towards?
+  Goal 5 - How do they prioritize their goals in the context of their daily responsibilities?
 
 ### VALUES (Understand the core values that influence the target audience's decision-making process)
-    Value 1 - What ethical considerations are most important to your ideal customer when choosing a provider?
-    Value 2 - How do they define quality and value in a product or service?
-    Value 3 - What company culture aspects do they value in their own organization?
-    Value 4 - How do they prefer to build relationships with vendors and partners?
-    Value 5 - What do they value most in their business relationships (e.g., transparency, reliability, innovation)?
+  Value 1 - What ethical considerations are most important to your ideal customer when choosing a provider?
+  Value 2 - How do they define quality and value in a product or service?
+  Value 3 - What company culture aspects do they value in their own organization?
+  Value 4 - How do they prefer to build relationships with vendors and partners?
+  Value 5 - What do they value most in their business relationships (e.g., transparency, reliability, innovation)?
 
 ### DECISION-MAKING PROCESSES (Gain insight into how the target audience makes purchasing decisions)
-    Decision-Making Process 1 - What steps do they typically follow when evaluating a new product or service?
-    Decision-Making Process 2 - Who else is involved in the decision-making process within their company?
-    Decision-Making Process 3 - What criteria are most important to them when selecting a solution?
-    Decision-Making Process 4- How do they gather and assess information before making a decision?
-    Decision-Making Process 5 - What external resources (reviews, testimonials, case studies) do they rely on during the decision-making process?
+  Decision-Making Process 1 - What steps do they typically follow when evaluating a new product or service?
+  Decision-Making Process 2 - Who else is involved in the decision-making process within their company?
+  Decision-Making Process 3 - What criteria are most important to them when selecting a solution?
+  Decision-Making Process 4 - How do they gather and assess information before making a decision?
+  Decision-Making Process 5 - What external resources (reviews, testimonials, case studies) do they rely on during the decision-making process?
 
 ### INFLUENCES (Identify the key factors and individuals that influence the target audience's choices)
-    Influence 1 - Who are the thought leaders or industry experts your ideal customer trusts the most?
-    Influence 2 - What publications, blogs, or websites do they frequently read for industry news and insights?
-    Influence 3 - How do they engage with their professional network to seek advice or recommendations?
-    Influence 4 - What role do customer reviews and testimonials play in their purchasing decisions?
-    Influence 5 - How do industry events, conferences, and webinars influence their perceptions and decisions?
+  Influence 1 - Who are the thought leaders or industry experts your ideal customer trusts the most?
+  Influence 2 - What publications, blogs, or websites do they frequently read for industry news and insights?
+  Influence 3 - How do they engage with their professional network to seek advice or recommendations?
+  Influence 4 - What role do customer reviews and testimonials play in their purchasing decisions?
+  Influence 5 - How do industry events, conferences, and webinars influence their perceptions and decisions?
 
 ### COMMUNICATION PREFERENCES (Understand how the target audience prefers to receive and interact with marketing messages)
-    Communication Preference 1 - What communication channels do they use most frequently (email, social media, phone, etc.)?
-    Communication Preference 2 - How do they prefer to receive information about new products or services?
-    Communication Preference 3 - What type of content (articles, videos, infographics) do they find most engaging and useful?
-    Communication Preference 4 - How often do they like to be contacted by potential vendors?
-    Communication Preference 5 - What tone and style of communication do they respond to best (formal, casual, informative, etc.)?
+  Communication Preference 1 - What communication channels do they use most frequently (email, social media, phone, etc.)?
+  Communication Preference 2 - How do they prefer to receive information about new products or services?
+  Communication Preference 3 - What type of content (articles, videos, infographics) do they find most engaging and useful?
+  Communication Preference 4 - How often do they like to be contacted by potential vendors?
+  Communication Preference 5 - What tone and style of communication do they respond to best (formal, casual, informative, etc.)?
 
 ## Response Format
 
-  🔎 🔎 🔎 MARKET RESEARCH - ${segmentName} 🔎 🔎 🔎
+🔎🔎🔎 MARKET RESEARCH - \${segmentName} 🔎🔎🔎
 
-  ⚠️ FEARS ⚠️
+---------------------------------------------------------------------------------
 
-  1️⃣ [Fear 1 title]
-  [A comprehensive explanation of the fear. Must include real-world business impact. Use paragraph and/or bullet points using 🔹.]
-  💡 How CFO's Can Help
-  [Comprehensively discuss how CFO services address it. Use paragraph and/or bullet points.]
+⚠️ FEARS ⚠️
 
-  [*Repeat the format above for the remaining 4 fears*]
+1️⃣ [Fear 1 title]
+[A comprehensive explanation of the fear. Must include real-world business impact. Use paragraph and/or bullet points.]
 
-  ⚙️ PAINS ⚙️
+💡 How Advisory Services Can Help
+[Comprehensively discuss how high-ticket advisory services address it. Use paragraph and/or bullet points.]
 
-  1️⃣ [Pain 1 title]
-  [A comprehensive explanation of the pain. Must include real-world negative consequences or financial impact. Use paragraph and/or bullet points  using 🔹.]
-  💡 How CFO's Can Help
-  [Comprehensively discuss how CFO services address it. Use paragraph and/or bullet points.]
 
-  [*Repeat the format above for the remaining 4 pains*]
+2️⃣ [Fear 2 title]
+[A comprehensive explanation of the fear. Must include real-world business impact. Use paragraph and/or bullet points.]
 
-  ⛔ OBJECTIONS ⛔
+💡 How Advisory Services Can Help
+[Comprehensively discuss how high-ticket advisory services address it. Use paragraph and/or bullet points.]
 
-  1️⃣ [Objection 1 title]
-  [A comprehensive explanation of the objection. Must include real-world client concerns. Use paragraph and/or bullet points  using 🔹.]
-  💡 How CFO's Can Help
-  [Comprehensively discuss and counter by providing benefits of a CFO's services. Use paragraph and/or bullet points.]
 
-  [*Repeat the format above for the remaining 4 objections*]
+3️⃣ [Fear 3 title]
+[A comprehensive explanation of the fear. Must include real-world business impact. Use paragraph and/or bullet points.]
 
-  🎯 GOALS 🎯
+💡 How Advisory Services Can Help
+[Comprehensively discuss how high-ticket advisory services address it. Use paragraph and/or bullet points.]
 
-  1️⃣ [Goal 1 title]
-  [A comprehensive explanation of the goal. Must include desired real-world outcomes. Use paragraph and/or bullet points  using 🔹.]
-  💡 How CFO's Can Help
-  [Comprehensively discuss how CFO's services help attain the goal. Use paragraph and/or bullet points.]
 
-  [*Repeat the format above for the remaining 4 goals]
+4️⃣ [Fear 4 title]
+[A comprehensive explanation of the fear. Must include real-world business impact. Use paragraph and/or bullet points.]
 
-  💎 VALUES 💎
+💡 How Advisory Services Can Help
+[Comprehensively discuss how high-ticket advisory services address it. Use paragraph and/or bullet points.]
 
-  1️⃣ [Value 1 title]
-  [A comprehensive explanation of the value. Must align the value to real-world business decisions. Use paragraph and/or bullet points  using 🔹.]
-  💡 How CFO's Can Help
-  [Comprehensively discuss how CFO's services help preserve that value. Use paragraph and/or bullet points.]
 
-  [*Repeat the format above for the remaining 4 values]
+5️⃣ [Fear 5 title]
+[A comprehensive explanation of the fear. Must include real-world business impact. Use paragraph and/or bullet points.]
 
-  🔄 DECISION-MAKING PROCESSES 🔄
+💡 How Advisory Services Can Help
+[Comprehensively discuss how high-ticket advisory services address it. Use paragraph and/or bullet points.]
 
-  1️⃣ [Process  1 title]
-  [A comprehensive explanation of the decision-making process. Must identify key stakeholders and actions. Use paragraph and/or bullet points  using 🔹.]
-  💡 How CFO's Can Help
-  [Comprehensively discuss how CFO's services help fit in or improve that process. Use paragraph and/or bullet points.]
+---------------------------------------------------------------------------------
 
-  [*Repeat the format above for the remaining 4 values]
+⚙️ PAINS ⚙️
 
-  🔊 INFLUENCES 🔊
+1️⃣ [Pain 1 title]
+[A comprehensive explanation of the pain. Must include real-world negative consequences or financial impact. Use paragraph and/or bullet points.]
 
-  1️⃣ [Influence 1 title]
-  [A comprehensive explanation of the influence. Must identify who/what shapes decisions and provide a specific marketing approach. Use paragraph and/or bullet points  using 🔹.]
-  💡 How CFO's Can Help
-  [Comprehensively discuss how CFO's services help leverage this influence. Use paragraph and/or bullet points.]
+💡 How Advisory Services Can Help
+[Comprehensively discuss how high-ticket advisory services address it. Use paragraph and/or bullet points.]
 
-  [*Repeat the format above for the remaining 4 influences]
 
-  📱 COMMUNICATION PREFERENCES 📱
+2️⃣ [Pain 2 title]
+[A comprehensive explanation of the pain. Must include real-world negative consequences or financial impact. Use paragraph and/or bullet points.]
 
-  1️⃣ [Preference 1 title]
-  [A comprehensive explanation of the communication preference and best practices. Must include channel preferences and specific content recommendations. Use paragraph and/or bullet points  using 🔹.]
-  💡 How CFO's Can Help
-  [Comprehensively discuss how CFO's services help aid, improve or leverage this preference. Use paragraph and/or bullet points  using 🔹.]
+💡 How Advisory Services Can Help
+[Comprehensively discuss how high-ticket advisory services address it. Use paragraph and/or bullet points.]
 
-  [*Repeat the format above for the remaining 4 preferences]
 
+3️⃣ [Pain 3 title]
+[A comprehensive explanation of the pain. Must include real-world negative consequences or financial impact. Use paragraph and/or bullet points.]
+
+💡 How Advisory Services Can Help
+[Comprehensively discuss how high-ticket advisory services address it. Use paragraph and/or bullet points.]
+
+
+4️⃣ [Pain 4 title]
+[A comprehensive explanation of the pain. Must include real-world negative consequences or financial impact. Use paragraph and/or bullet points.]
+
+💡 How Advisory Services Can Help
+[Comprehensively discuss how high-ticket advisory services address it. Use paragraph and/or bullet points.]
+
+
+5️⃣ [Pain 5 title]
+[A comprehensive explanation of the pain. Must include real-world negative consequences or financial impact. Use paragraph and/or bullet points.]
+
+💡 How Advisory Services Can Help
+[Comprehensively discuss how high-ticket advisory services address it. Use paragraph and/or bullet points.]
+
+---------------------------------------------------------------------------------
+
+⛔ OBJECTIONS ⛔
+
+1️⃣ [Objection 1 title]
+[A comprehensive explanation of the objection. Must include real-world client concerns. Use paragraph and/or bullet points.]
+
+💡 How Advisory Services Can Help
+[Comprehensively discuss and counter by providing benefits of high-ticket advisory services. Use paragraph and/or bullet points.]
+
+
+2️⃣ [Objection 2 title]
+[A comprehensive explanation of the objection. Must include real-world client concerns. Use paragraph and/or bullet points.]
+
+💡 How Advisory Services Can Help
+[Comprehensively discuss and counter by providing benefits of high-ticket advisory services. Use paragraph and/or bullet points.]
+
+
+3️⃣ [Objection 3 title]
+[A comprehensive explanation of the objection. Must include real-world client concerns. Use paragraph and/or bullet points.]
+
+💡 How Advisory Services Can Help
+[Comprehensively discuss and counter by providing benefits of high-ticket advisory services. Use paragraph and/or bullet points.]
+
+
+4️⃣ [Objection 4 title]
+[A comprehensive explanation of the objection. Must include real-world client concerns. Use paragraph and/or bullet points.]
+
+💡 How Advisory Services Can Help
+[Comprehensively discuss and counter by providing benefits of high-ticket advisory services. Use paragraph and/or bullet points.]
+
+
+5️⃣ [Objection 5 title]
+[A comprehensive explanation of the objection. Must include real-world client concerns. Use paragraph and/or bullet points.]
+
+💡 How Advisory Services Can Help
+[Comprehensively discuss and counter by providing benefits of high-ticket advisory services. Use paragraph and/or bullet points.]
+
+---------------------------------------------------------------------------------
+
+🎯 GOALS 🎯
+
+1️⃣ [Goal 1 title]
+[A comprehensive explanation of the goal. Must include desired real-world outcomes. Use paragraph and/or bullet points.]
+
+💡 How Advisory Services Can Help
+[Comprehensively discuss how high-ticket advisory services help attain the goal. Use paragraph and/or bullet points.]
+
+
+2️⃣ [Goal 2 title]
+[A comprehensive explanation of the goal. Must include desired real-world outcomes. Use paragraph and/or bullet points.]
+
+💡 How Advisory Services Can Help
+[Comprehensively discuss how high-ticket advisory services help attain the goal. Use paragraph and/or bullet points.]
+
+
+3️⃣ [Goal 3 title]
+[A comprehensive explanation of the goal. Must include desired real-world outcomes. Use paragraph and/or bullet points.]
+
+💡 How Advisory Services Can Help
+[Comprehensively discuss how high-ticket advisory services help attain the goal. Use paragraph and/or bullet points.]
+
+
+4️⃣ [Goal 4 title]
+[A comprehensive explanation of the goal. Must include desired real-world outcomes. Use paragraph and/or bullet points.]
+
+💡 How Advisory Services Can Help
+[Comprehensively discuss how high-ticket advisory services help attain the goal. Use paragraph and/or bullet points.]
+
+
+5️⃣ [Goal 5 title]
+[A comprehensive explanation of the goal. Must include desired real-world outcomes. Use paragraph and/or bullet points.]
+
+💡 How Advisory Services Can Help
+[Comprehensively discuss how high-ticket advisory services help attain the goal. Use paragraph and/or bullet points.]
+
+---------------------------------------------------------------------------------
+
+💎 VALUES 💎
+
+1️⃣ [Value 1 title]
+[A comprehensive explanation of the value. Must align the value to real-world business decisions. Use paragraph and/or bullet points.]
+
+💡 How Advisory Services Can Help
+[Comprehensively discuss how high-ticket advisory services help preserve that value. Use paragraph and/or bullet points.]
+
+
+2️⃣ [Value 2 title]
+[A comprehensive explanation of the value. Must align the value to real-world business decisions. Use paragraph and/or bullet points.]
+
+💡 How Advisory Services Can Help
+[Comprehensively discuss how high-ticket advisory services help preserve that value. Use paragraph and/or bullet points.]
+
+
+3️⃣ [Value 3 title]
+[A comprehensive explanation of the value. Must align the value to real-world business decisions. Use paragraph and/or bullet points.]
+
+💡 How Advisory Services Can Help
+[Comprehensively discuss how high-ticket advisory services help preserve that value. Use paragraph and/or bullet points.]
+
+
+4️⃣ [Value 4 title]
+[A comprehensive explanation of the value. Must align the value to real-world business decisions. Use paragraph and/or bullet points.]
+
+💡 How Advisory Services Can Help
+[Comprehensively discuss how high-ticket advisory services help preserve that value. Use paragraph and/or bullet points.]
+
+
+5️⃣ [Value 5 title]
+[A comprehensive explanation of the value. Must align the value to real-world business decisions. Use paragraph and/or bullet points.]
+
+💡 How Advisory Services Can Help
+[Comprehensively discuss how high-ticket advisory services help preserve that value. Use paragraph and/or bullet points.]
+
+---------------------------------------------------------------------------------
+
+🔄 DECISION-MAKING PROCESSES 🔄
+
+1️⃣ [Process 1 title]
+[A comprehensive explanation of the decision-making process. Must identify key stakeholders and actions. Use paragraph and/or bullet points.]
+
+💡 How Advisory Services Can Help
+[Comprehensively discuss how high-ticket advisory services help fit in or improve that process. Use paragraph and/or bullet points.]
+
+
+2️⃣ [Process 2 title]
+[A comprehensive explanation of the decision-making process. Must identify key stakeholders and actions. Use paragraph and/or bullet points.]
+
+💡 How Advisory Services Can Help
+[Comprehensively discuss how high-ticket advisory services help fit in or improve that process. Use paragraph and/or bullet points.]
+
+
+3️⃣ [Process 3 title]
+[A comprehensive explanation of the decision-making process. Must identify key stakeholders and actions. Use paragraph and/or bullet points.]
+
+💡 How Advisory Services Can Help
+[Comprehensively discuss how high-ticket advisory services help fit in or improve that process. Use paragraph and/or bullet points.]
+
+
+4️⃣ [Process 4 title]
+[A comprehensive explanation of the decision-making process. Must identify key stakeholders and actions. Use paragraph and/or bullet points.]
+
+💡 How Advisory Services Can Help
+[Comprehensively discuss how high-ticket advisory services help fit in or improve that process. Use paragraph and/or bullet points.]
+
+
+5️⃣ [Process 5 title]
+[A comprehensive explanation of the decision-making process. Must identify key stakeholders and actions. Use paragraph and/or bullet points.]
+
+💡 How Advisory Services Can Help
+[Comprehensively discuss how high-ticket advisory services help fit in or improve that process. Use paragraph and/or bullet points.]
+
+---------------------------------------------------------------------------------
+
+🔊 INFLUENCES 🔊
+
+1️⃣ [Influence 1 title]
+[A comprehensive explanation of the influence. Must identify who/what shapes decisions and provide a specific marketing approach. Use paragraph and/or bullet points.]
+
+💡 How Advisory Services Can Help
+[Comprehensively discuss how high-ticket advisory services help leverage this influence. Use paragraph and/or bullet points.]
+
+
+2️⃣ [Influence 2 title]
+[A comprehensive explanation of the influence. Must identify who/what shapes decisions and provide a specific marketing approach. Use paragraph and/or bullet points.]
+
+💡 How Advisory Services Can Help
+[Comprehensively discuss how high-ticket advisory services help leverage this influence. Use paragraph and/or bullet points.]
+
+
+3️⃣ [Influence 3 title]
+[A comprehensive explanation of the influence. Must identify who/what shapes decisions and provide a specific marketing approach. Use paragraph and/or bullet points.]
+
+💡 How Advisory Services Can Help
+[Comprehensively discuss how high-ticket advisory services help leverage this influence. Use paragraph and/or bullet points.]
+
+
+4️⃣ [Influence 4 title]
+[A comprehensive explanation of the influence. Must identify who/what shapes decisions and provide a specific marketing approach. Use paragraph and/or bullet points.]
+
+💡 How Advisory Services Can Help
+[Comprehensively discuss how high-ticket advisory services help leverage this influence. Use paragraph and/or bullet points.]
+
+
+5️⃣ [Influence 5 title]
+[A comprehensive explanation of the influence. Must identify who/what shapes decisions and provide a specific marketing approach. Use paragraph and/or bullet points.]
+
+💡 How Advisory Services Can Help
+[Comprehensively discuss how high-ticket advisory services help leverage this influence. Use paragraph and/or bullet points.]
+
+---------------------------------------------------------------------------------
+
+📱 COMMUNICATION PREFERENCES 📱
+
+1️⃣ [Preference 1 title]
+[A comprehensive explanation of the communication preference and best practices. Must include channel preferences and specific content recommendations. Use paragraph and/or bullet points.]
+
+💡 How Advisory Services Can Help
+[Comprehensively discuss how high-ticket advisory services help aid, improve or leverage this preference. Use paragraph and/or bullet points.]
+
+
+2️⃣ [Preference 2 title]
+[A comprehensive explanation of the communication preference and best practices. Must include channel preferences and specific content recommendations. Use paragraph and/or bullet points.]
+
+💡 How Advisory Services Can Help
+[Comprehensively discuss how high-ticket advisory services help aid, improve or leverage this preference. Use paragraph and/or bullet points.]
+
+
+3️⃣ [Preference 3 title]
+[A comprehensive explanation of the communication preference and best practices. Must include channel preferences and specific content recommendations. Use paragraph and/or bullet points.]
+
+💡 How Advisory Services Can Help
+[Comprehensively discuss how high-ticket advisory services help aid, improve or leverage this preference. Use paragraph and/or bullet points.]
+
+
+4️⃣ [Preference 4 title]
+[A comprehensive explanation of the communication preference and best practices. Must include channel preferences and specific content recommendations. Use paragraph and/or bullet points.]
+
+💡 How Advisory Services Can Help
+[Comprehensively discuss how high-ticket advisory services help aid, improve or leverage this preference. Use paragraph and/or bullet points.]
+
+
+5️⃣ [Preference 5 title]
+[A comprehensive explanation of the communication preference and best practices. Must include channel preferences and specific content recommendations. Use paragraph and/or bullet points.]
+
+💡 How Advisory Services Can Help
+[Comprehensively discuss how high-ticket advisory services help aid, improve or leverage this preference. Use paragraph and/or bullet points.]
 
 ## ICP:
 ${segmentInfo}
 
 Important notes:
 - Follow the exact structure shown in the template with precise emoji placement
-- Explanations must include both the issue/need AND how CFO services specifically address it
+- Explanations must include both the issue/need AND how high-ticket advisory services specifically address it
 - Ensure consistent sentence structure and formatting across all sections
 - DO NOT include introductions, disclaimers, or conclusions
 - Maintain exact spacing shown in the template
+- Use bold formatting for titles to make them stand out
+- Use bullet points where appropriate for better readability
 `;
 
     

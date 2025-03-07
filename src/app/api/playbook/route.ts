@@ -17,7 +17,7 @@ export async function POST(request: Request) {
 Create a comprehensive marketing playbook that leverages ALL insights from the provided segment research. Extract specific details, examples, metrics, and industry terminology from the research to ensure the playbook is deeply relevant and practical, not generic or high-level.
 
 ## Format Requirements
-- Create a compelling title: "CFO Services Marketing Playbook: ${industry} Segment"
+- Create a compelling title: "CFO Services Marketing Playbook: *Segment Title"
 - Format each section with a clear, numbered emoji header (e.g., "🔹 1️⃣ TARGET AUDIENCE 🔹")
 - Use clean section dividers (✧═══════════════✧) between major sections
 - Use number emojis (1️⃣, 2️⃣, 3️⃣, 4️⃣, 5️⃣) at the start of each point

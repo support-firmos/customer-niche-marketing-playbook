@@ -22,22 +22,20 @@ export default function Home() {
   const [step4DeepSegmentResearch, setStep4DeepSegmentResearch] = useState<string | null>(null);
   const [step5GeneratedPlaybook, setStep5GeneratedPlaybook] = useState<string | null>(null);
   
-  const [isGenerating, setIsGenerating] = useState(false);
   const [isGeneratingNextStep, setIsGeneratingNextStep] = useState(false);
   const [currentIndustry, setCurrentIndustry] = useState<string>("");
-  const [progressStatus, setProgressStatus] = useState<string>('');
+  //const [progressStatus, setProgressStatus] = useState<string>('');
   const [error, setError] = useState<string | null>(null);
 
   const generateResearch = async (formData: FormData) => {
     setError(null);
-    setIsGenerating(true);
     setStep1GeneratedResearch('');
     setStep2EnhancedResearch(null);
     setStep3GeneratedSalesNav(null);
     setStep3Segments(null);
     setStep4DeepSegmentResearch(null);
     setStep5GeneratedPlaybook(null);
-    setProgressStatus('Identifying target segments...');
+    //setProgressStatus('Identifying target segments...');
     setCurrentIndustry(formData.input);
 
     try {
@@ -68,8 +66,7 @@ export default function Home() {
       setError('An error occurred while generating the market research. Please try again.');
       setStep1GeneratedResearch(null);
     } finally {
-      setIsGenerating(false);
-      setProgressStatus('');
+      //setProgressStatus('');
     }
   };
 
@@ -109,11 +106,10 @@ export default function Home() {
 
   const generateSalesNav = async (segments: string) => {
     setError(null);
-    setIsGenerating(true);
     setIsGeneratingNextStep(true);
     setStep3GeneratedSalesNav('');
     //setStep2EnhancedResearch(null);
-    setProgressStatus('Creating LinkedIn Sales Navigator strategy...');
+    //setProgressStatus('Creating LinkedIn Sales Navigator strategy...');
 
     try {
       const response = await fetch('/api/sales-nav', {
@@ -160,8 +156,7 @@ export default function Home() {
       setError('An error occurred while generating the targeting strategy. Please try again.');
       setStep3GeneratedSalesNav(null);
     } finally {
-      setIsGenerating(false);
-      setProgressStatus('');
+      //setProgressStatus('');
       setIsGeneratingNextStep(false);
     }
   };
@@ -176,7 +171,7 @@ export default function Home() {
     
     setError(null);
     setIsGeneratingNextStep(true);
-    setProgressStatus('Creating deep segment research...');
+    //setProgressStatus('Deep segment research on-going...');
     
     try {
       const response = await fetch('/api/deep-segment', {
@@ -220,16 +215,16 @@ export default function Home() {
       setError('An error occurred while generating the deep segment research. Please try again.');
     } finally {
       setIsGeneratingNextStep(false);
-      setProgressStatus('');
+     //setProgressStatus('');
     }
   };
 
   const generateMarketingPlaybook = async (input: string) => {
+    console.log('test test: ', input);
     setError(null);
-    setIsGenerating(true);
     setStep5GeneratedPlaybook('');
     //setStep2EnhancedResearch(null);
-    setProgressStatus('Creating Marketing Playbook...');
+    //setProgressStatus('Creating Marketing Playbook...');
     setIsGeneratingNextStep(true);
 
     try {
@@ -257,11 +252,11 @@ export default function Home() {
       }
       
       // The result should now be a readable text format
-      const displayContent = data.result.trim();
-      console.log("Display content preview:", displayContent.substring(0, 100) + "...");
+      const content = data.result.trim();
+      console.log("Display content preview:", content.substring(0, 100) + "...");
       
       // Set the display content
-      setStep5GeneratedPlaybook(displayContent);
+      setStep5GeneratedPlaybook(content);
       
     } catch (error) {
       console.error('Error generating playbook:', error);
@@ -269,7 +264,7 @@ export default function Home() {
       setStep5GeneratedPlaybook(null);
     } finally {
       setIsGeneratingNextStep(false);
-      setProgressStatus('');
+      //setProgressStatus('');
     }
   };
 
@@ -292,7 +287,6 @@ export default function Home() {
   const isStep3Done = !!step3GeneratedSalesNav;
   const isStep4Done = !!step4DeepSegmentResearch;
   const isStep5Done = !!step5GeneratedPlaybook;
-  //const isStep5Done = !!step4GeneratedPlaybook;
 
 const handleSteps = () => {
   if (!isStep2Done) {
@@ -357,13 +351,6 @@ const handleSteps = () => {
           )}
         </div>
         
-        {isGenerating && (
-          <div className="text-center mt-4">
-            <p className="text-[#8a8f98]">
-              {progressStatus || 'Generating segments...'}
-            </p>
-          </div>
-        )}
       </div>
     </div>
   );
