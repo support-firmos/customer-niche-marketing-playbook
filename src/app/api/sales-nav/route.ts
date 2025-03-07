@@ -109,7 +109,7 @@ export async function POST(request: Request) {
         model: 'google/gemini-2.0-flash-001',
         messages: [{ role: 'user', content: prompt }],
         stream: false,
-        max_tokens: 5000,
+        max_tokens: 20000,
         temperature: 1,
       }),
     });
@@ -149,9 +149,39 @@ export async function POST(request: Request) {
         // This will throw if content is not valid JSON
         const parsedSegments = JSON.parse(content);
         
-        // Return both the formatted text for display and structured data for selection
+        // Create a readable text format for display
+        let readableContent = '';
+        
+        if (Array.isArray(parsedSegments)) {
+          parsedSegments.forEach((segment, index) => {
+            if (segment.name && segment.content) {
+              // Add segment name as a header with formatting
+              readableContent += `${index + 1}. ${segment.name.toUpperCase()}\n`;
+              readableContent += '='.repeat(segment.name.length + 4) + '\n\n';
+              
+              // Process the content to ensure proper formatting
+              let formattedContent = segment.content.trim();
+              
+              // Ensure proper line breaks for sections
+              formattedContent = formattedContent.replace(/Why This Segment\?/g, '\nWhy This Segment?\n' + '-'.repeat(18) + '\n');
+              formattedContent = formattedContent.replace(/Key Challenges:/g, '\nKey Challenges:\n' + '-'.repeat(15) + '\n');
+              formattedContent = formattedContent.replace(/🎯 Sales Navigator Filters:/g, '\n🎯 Sales Navigator Filters:\n' + '-'.repeat(25) + '\n');
+              formattedContent = formattedContent.replace(/Best Intent Data Signals/g, '\nBest Intent Data Signals\n' + '-'.repeat(24) + '\n');
+              
+              // Add the formatted content
+              readableContent += formattedContent + '\n\n';
+              
+              // Add separator between segments
+              if (index < parsedSegments.length - 1) {
+                readableContent += '\n' + '*'.repeat(50) + '\n\n';
+              }
+            }
+          });
+        }
+        
+        // Return both the readable text for display and structured data for segment selection
         return NextResponse.json({
-          result: JSON.stringify(parsedSegments, null, 2), // Pretty JSON for display
+          result: readableContent || JSON.stringify(parsedSegments, null, 2), // Readable text or fallback to JSON
           segments: parsedSegments // Structured data for segment selection
         });
       } catch (jsonError) {

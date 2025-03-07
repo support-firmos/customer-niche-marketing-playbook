@@ -237,11 +237,51 @@ Important notes:
       content = content.replace(/```\n/g, '').replace(/\n```/g, '');
     }
     
-    console.log('API response content (cleaned):', content.substring(0, 100) + '...');
+    // Try to parse the content as JSON to see if it's a JSON structure
+    let finalContent = content;
+    try {
+      if (content.trim().startsWith('[') || content.trim().startsWith('{')) {
+        const parsedContent = JSON.parse(content);
+        
+        // If it's an array of segments, format it nicely
+        if (Array.isArray(parsedContent)) {
+          let formattedContent = '';
+          
+          parsedContent.forEach((segment, index) => {
+            if (segment.name && segment.content) {
+              // Add segment name as a header with formatting
+              formattedContent += `${index + 1}. ${segment.name.toUpperCase()}\n`;
+              formattedContent += '='.repeat(segment.name.length + 4) + '\n\n';
+              
+              // Add the content
+              formattedContent += segment.content.trim() + '\n\n';
+              
+              // Add separator between segments
+              if (index < parsedContent.length - 1) {
+                formattedContent += '\n' + '*'.repeat(50) + '\n\n';
+              }
+            }
+          });
+          
+          if (formattedContent) {
+            finalContent = formattedContent;
+          }
+        }
+        // If it's a single object with a content property, use that
+        else if (parsedContent && typeof parsedContent === 'object' && parsedContent.content) {
+          finalContent = parsedContent.content;
+        }
+      }
+    } catch (error) {
+      console.log('Not JSON or parsing failed:', error);
+      // Keep the original content if parsing fails
+    }
+    
+    console.log('API response content (final):', finalContent.substring(0, 100) + '...');
     
     // Return the content as JSON
     return NextResponse.json({
-      result: content
+      result: finalContent
     });
     
   } catch (error) {

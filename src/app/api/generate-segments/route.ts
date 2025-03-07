@@ -50,7 +50,7 @@ Provide only the numbered list without markdown or additional explanations. Arra
         model: 'google/gemini-2.0-flash-001',
         messages: [{ role: 'user', content: prompt }],
         stream: false,
-        max_tokens: 5000,
+        max_tokens: 20000,
         temperature: 0.8,
       }),
     });
