@@ -138,26 +138,20 @@ export default function Home() {
         console.warn('Warning from sales-nav API:', data.error);
       }
       
-      let cleanJSON = data.result.trim();
-      // This should no longer be necessary as we're cleaning in the API, but keeping as a fallback
-      if (cleanJSON.startsWith("```json")) {
-          cleanJSON = cleanJSON.slice(7, -3).trim();  // Remove ```json and trailing ```
-      } else if (cleanJSON.startsWith("```")) {
-          cleanJSON = cleanJSON.slice(3, -3).trim();  // Remove ``` and trailing ```
-      }
-      console.log("cleanJSON", cleanJSON);
-
-      setStep3GeneratedSalesNav(cleanJSON);
-
-      try {
-        const segmentsJSON = JSON.parse(cleanJSON);
-        console.log('segments', segmentsJSON);
-        if (segmentsJSON) {
-          setStep3Segments(segmentsJSON);
-        }
-      } catch (error) {
-        console.error('Error parsing segments JSON:', error);
-        setError('Failed to parse segments. Please try again.');
+      // The result should now be a readable text format
+      const displayContent = data.result.trim();
+      console.log("Display content preview:", displayContent.substring(0, 100) + "...");
+      
+      // Set the display content
+      setStep3GeneratedSalesNav(displayContent);
+      
+      // Set the segments for selection (these are already parsed in the API)
+      if (data.segments && Array.isArray(data.segments)) {
+        console.log('Segments from API:', data.segments.length);
+        setStep3Segments(data.segments);
+      } else {
+        console.error('No valid segments in API response');
+        setError('Failed to get valid segments. Please try again.');
       }
       
     } catch (error) {
@@ -201,32 +195,13 @@ export default function Home() {
         throw new Error('No result returned from deep segment research');
       }
       
-      // Check if the result is a JSON string and try to parse it
-      let resultContent = data.result;
-      try {
-        // Check if it looks like JSON
-        if (typeof resultContent === 'string' &&
-            (resultContent.trim().startsWith('[') || resultContent.trim().startsWith('{'))) {
-          const parsedResult = JSON.parse(resultContent);
-          console.log('Parsed result:', parsedResult);
-          
-          // If it's an array of segments, use the selected segment's content
-          if (Array.isArray(parsedResult) && selectedSegment) {
-            // Find the matching segment by name
-            const matchingSegment = parsedResult.find(
-              segment => segment.name === selectedSegment.name
-            );
-            
-            if (matchingSegment) {
-              console.log('Found matching segment:', matchingSegment);
-              resultContent = matchingSegment.content;
-            }
-          }
-        }
-      } catch (error) {
-        console.log('Not JSON or parsing failed:', error);
-        // Keep the original result if parsing fails
-      }
+      // The API now returns a clean, readable format
+      const resultContent = data.result;
+      console.log('Deep segment research content preview:',
+        typeof resultContent === 'string'
+          ? resultContent.substring(0, 100) + '...'
+          : String(resultContent).substring(0, 100) + '...'
+      );
       
       //setStep3GeneratedSalesNav(null); // Hide sales nav
       setStep3Segments(null);
